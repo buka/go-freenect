@@ -10,6 +10,8 @@ There is no formal notion of errors at this point.  Usually upon failure the val
 
 Developed and tested on Linux (Mint, kernel 3.0.0-15-generic) x64
 
+See the wiki for the [latest _godoc_](wiki/godoc)
+
 Getting Started
 ---------------
 ### Install libfreenect
