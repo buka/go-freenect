@@ -20,17 +20,17 @@ package freenect_test
 import (
 	"fmt"
 	"time"
-	"hash/crc32"
+	//"hash/crc32"
 	//"math"
-	"os"
-	"image"
-	"image/color"
-  "image/png"
+	//"os"
+	//"image"
+	//"image/color"
+  //"image/png"
 	"testing"
 	"freenect"
 )
 
-
+/*
 func TestOpenCloseLib(t *testing.T) {
 	lib, rc := freenect.Initialize()
 	if rc != 0 {
@@ -564,7 +564,7 @@ func TestVideoAndDepth(t *testing.T) {
 	}
 }
 
-/*
+*/
 
 func TestTilt(t *testing.T) {
 	lib, rc := freenect.Initialize()
@@ -581,8 +581,14 @@ func TestTilt(t *testing.T) {
 
 			defer dev.Close()
 
+
 			dev.LED(freenect.OFF)
 			tilt := dev.GetTilt()
+
+			run := true
+			go func(){
+				for run { tilt.Refresh() }
+			}()
 
 			dump := func() {
 				motor := ""
@@ -594,41 +600,41 @@ func TestTilt(t *testing.T) {
 				fmt.Printf("Current settings -- angle %f degrees, motor %s, accel (%f, %f, %f)\n",tilt.Angle, motor, tilt.AccelX, tilt.AccelY, tilt.AccelZ)
 			}
 
-			dump()
-
 			dev.LED(freenect.BLINK_GREEN)
+			dump()
 			fmt.Printf("Leveling...\n")
 			tilt.SetAngle(0.0)
-			tilt.Refresh()
 			for tilt.Angle != 0.0 {
-				tilt.Refresh()
-				dump()
 			}
+			dump()
+			time.Sleep(1e9)
 
 			dev.LED(freenect.RED)
-			tilt.SetAngle(45.0)
-			tilt.Refresh()
-			for tilt.Status != freenect.TILT_MOVING {
-				tilt.Refresh()
-				dump()
+			fmt.Printf("27 degrees\n")
+			tilt.SetAngle(27.0)
+			for tilt.Status == freenect.TILT_MOVING {
 			}
+			dump()
+			time.Sleep(1e9)
 
 			dev.LED(freenect.YELLOW)
-			tilt.SetAngle(-45.0)
-			tilt.Refresh()
-			for tilt.Status != freenect.TILT_MOVING {
-				tilt.Refresh()
-				dump()
+			fmt.Printf("-27 degrees\n")
+			tilt.SetAngle(-27.0)
+			for tilt.Status == freenect.TILT_MOVING {
 			}
+			dump()
+			time.Sleep(1e9)
 
+			fmt.Printf("Relevel\n")
 			dev.LED(freenect.BLINK_RED_YELLOW)
 			tilt.SetAngle(0.0)
-			tilt.Refresh()
 			for tilt.Angle != 0.0 {
-				tilt.Refresh()
-				dump()
 			}
+			dump()
+			time.Sleep(1e9)
+
+			run = false
 		}
 	}
 }
-*/
+

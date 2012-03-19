@@ -110,11 +110,11 @@ type Device struct {
 
 type Tilt struct {
 	device		*Device
-	Angle			float64
+	Angle			float32
 	Status		int
-	AccelX		float64
-	AccelY		float64
-	AccelZ		float64
+	AccelX		float32
+	AccelY		float32
+	AccelZ		float32
 }
 
 // required for the logging callback
@@ -207,17 +207,16 @@ func (device *Device) GetTilt() *Tilt {
 }
 
 func (tilt *Tilt) Refresh() {
+	C.freenect_update_tilt_state(tilt.device.dev)
 	state := C.freenect_get_tilt_state(tilt.device.dev)
 
-	tilt.Angle = float64(C.freenect_get_tilt_degs(state))
+	tilt.Angle = float32(C.freenect_get_tilt_degs(state))
 	tilt.Status = int(C.freenect_get_tilt_status(state))
 	var x, y, z C.double
 	C.freenect_get_mks_accel(state, &x, &y, &z)
-	tilt.AccelX = float64(x)
-	tilt.AccelY = float64(y)
-	tilt.AccelZ = float64(z)
-
-	C.freenect_update_tilt_state(tilt.device.dev)
+	tilt.AccelX = float32(x)
+	tilt.AccelY = float32(y)
+	tilt.AccelZ = float32(z)
 }
 
 func (tilt *Tilt) SetAngle(deg float64) int {
