@@ -1,0 +1,705 @@
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+
+	
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "freenect"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#overview">Overview</a></dd>
+			<dd><a href="#index">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<h2 id="overview">Overview</h2>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<p>
+go-freenect is a wrapper for the libfreenect C library.
+</p>
+
+		
+	
+		<h2 id="index">Index</h2>
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+		<div id="manual-nav">
+			<dl>
+			
+				<dd><a href="#constants">Constants</a></dd>
+			
+			
+			
+			
+				
+				<dd><a href="#DepthCamera">type DepthCamera</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#DepthCamera.Start">func (camera *DepthCamera) Start() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#DepthCamera.Stop">func (camera *DepthCamera) Stop() int</a></dd>
+				
+			
+				
+				<dd><a href="#DepthFormat">type DepthFormat</a></dd>
+				
+				
+			
+				
+				<dd><a href="#DepthSink">type DepthSink</a></dd>
+				
+				
+			
+				
+				<dd><a href="#DepthSource">type DepthSource</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Device">type Device</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Device.Close">func (device *Device) Close() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Device.DepthCamera">func (device *Device) DepthCamera(res Resolution, fmt DepthFormat, source DepthSource, sink DepthSink) (*DepthCamera, int)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Device.GetTilt">func (device *Device) GetTilt() *Tilt</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Device.LED">func (device *Device) LED(option LEDOption) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Device.Open">func (device *Device) Open() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Device.VideoCamera">func (device *Device) VideoCamera(res Resolution, fmt VideoFormat, source VideoSource, sink VideoSink) (*VideoCamera, int)</a></dd>
+				
+			
+				
+				<dd><a href="#Freenect">type Freenect</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Initialize">func Initialize() (*Freenect, int)</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Freenect.Log">func (freenect *Freenect) Log(logger Logger)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Freenect.LogLevel">func (freenect *Freenect) LogLevel(level LoggerLevel)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Freenect.Shutdown">func (freenect *Freenect) Shutdown() int</a></dd>
+				
+			
+				
+				<dd><a href="#LEDOption">type LEDOption</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Logger">type Logger</a></dd>
+				
+				
+			
+				
+				<dd><a href="#LoggerLevel">type LoggerLevel</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Resolution">type Resolution</a></dd>
+				
+				
+			
+				
+				<dd><a href="#Tilt">type Tilt</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Tilt.Refresh">func (tilt *Tilt) Refresh()</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Tilt.SetAngle">func (tilt *Tilt) SetAngle(deg float64) int</a></dd>
+				
+			
+				
+				<dd><a href="#VideoCamera">type VideoCamera</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#VideoCamera.Start">func (camera *VideoCamera) Start() int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#VideoCamera.Stop">func (camera *VideoCamera) Stop() int</a></dd>
+				
+			
+				
+				<dd><a href="#VideoFormat">type VideoFormat</a></dd>
+				
+				
+			
+				
+				<dd><a href="#VideoSink">type VideoSink</a></dd>
+				
+				
+			
+				
+				<dd><a href="#VideoSource">type VideoSource</a></dd>
+				
+				
+			
+			
+		</dl>
+
+		
+
+		
+			<h4>Package files</h4>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href="/target/freenect.go">freenect.go</a>
+			
+			</span>
+			</p>
+		
+	
+		
+			<h2 id="constants">Constants</h2>
+			
+				<pre>const (
+    LogFatal   = LoggerLevel(C.FREENECT_LOG_FATAL)
+    LogError   = LoggerLevel(C.FREENECT_LOG_ERROR)
+    LogWarning = LoggerLevel(C.FREENECT_LOG_WARNING)
+    LogNotice  = LoggerLevel(C.FREENECT_LOG_NOTICE)
+    LogInfo    = LoggerLevel(C.FREENECT_LOG_INFO)
+    LogDebug   = LoggerLevel(C.FREENECT_LOG_DEBUG)
+    LogSpew    = LoggerLevel(C.FREENECT_LOG_SPEW)
+    LogFlood   = LoggerLevel(C.FREENECT_LOG_FLOOD)
+)</pre>
+				
+			
+				<pre>const (
+    LOW    = Resolution(C.FREENECT_RESOLUTION_LOW)
+    MEDIUM = Resolution(C.FREENECT_RESOLUTION_MEDIUM)
+    HIGH   = Resolution(C.FREENECT_RESOLUTION_HIGH)
+)</pre>
+				
+			
+				<pre>const (
+    RGB             = VideoFormat(C.FREENECT_VIDEO_RGB)
+    BAYER           = VideoFormat(C.FREENECT_VIDEO_BAYER)
+    IR_8BIT         = VideoFormat(C.FREENECT_VIDEO_IR_8BIT)
+    IR_10BIT        = VideoFormat(C.FREENECT_VIDEO_IR_10BIT)
+    IR_10BIT_PACKED = VideoFormat(C.FREENECT_VIDEO_IR_10BIT_PACKED)
+    YUV_RGB         = VideoFormat(C.FREENECT_VIDEO_YUV_RGB)
+    YUV_RAW         = VideoFormat(C.FREENECT_VIDEO_YUV_RAW)
+)</pre>
+				
+			
+				<pre>const (
+    D11BIT        = DepthFormat(C.FREENECT_DEPTH_11BIT)
+    D10BIT        = DepthFormat(C.FREENECT_DEPTH_10BIT)
+    D11BIT_PACKED = DepthFormat(C.FREENECT_DEPTH_11BIT_PACKED)
+    D10BIT_PACKED = DepthFormat(C.FREENECT_DEPTH_10BIT_PACKED)
+    REGISTERED    = DepthFormat(C.FREENECT_DEPTH_REGISTERED)
+    MM            = DepthFormat(C.FREENECT_DEPTH_MM)
+)</pre>
+				
+			
+				<pre>const (
+    OFF              = LEDOption(C.LED_OFF)
+    GREEN            = LEDOption(C.LED_GREEN)
+    RED              = LEDOption(C.LED_RED)
+    YELLOW           = LEDOption(C.LED_YELLOW)
+    BLINK_GREEN      = LEDOption(C.LED_BLINK_GREEN)
+    BLINK_RED_YELLOW = LEDOption(C.LED_BLINK_RED_YELLOW)
+)</pre>
+				
+			
+				<pre>const (
+    TILT_STOPPED  = int(C.TILT_STATUS_STOPPED)
+    TILT_AT_LIMIT = int(C.TILT_STATUS_LIMIT)
+    TILT_MOVING   = int(C.TILT_STATUS_MOVING)
+)</pre>
+				
+			
+		
+		
+		
+		
+			
+			
+			<h2 id="DepthCamera">type <a href="/target/freenect.go?s=8146:8270#L249">DepthCamera</a></h2>
+			<pre>type DepthCamera struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+This type represents the depth camera on the device. It can be acquired via the Device function of the same name.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+				
+				<h3 id="DepthCamera.Start">func (*DepthCamera) <a href="/target/freenect.go?s=10741:10779#L330">Start</a></h3>
+				<pre>func (camera *DepthCamera) Start() int</pre>
+				<p>
+Starts the acquisition of the depth stream. The source function will be invoked to obtain the first frame buffer.
+</p>
+
+				
+				
+			
+				
+				<h3 id="DepthCamera.Stop">func (*DepthCamera) <a href="/target/freenect.go?s=11527:11564#L366">Stop</a></h3>
+				<pre>func (camera *DepthCamera) Stop() int</pre>
+				<p>
+Stops the acquisition of the depth stream.
+</p>
+
+				
+				
+			
+		
+			
+			
+			<h2 id="DepthFormat">type <a href="/target/freenect.go?s=979:1002#L30">DepthFormat</a></h2>
+			<pre>type DepthFormat int32</pre>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="DepthSink">type <a href="/target/freenect.go?s=7978:8028#L247">DepthSink</a></h2>
+			<pre>type DepthSink func(buffer []uint16, stamp int32)</pre>
+			<p>
+Type definition for function used to receive depth frames from the device.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="DepthSource">type <a href="/target/freenect.go?s=7857:7899#L245">DepthSource</a></h2>
+			<pre>type DepthSource func(bytes int) []uint16</pre>
+			<p>
+Type definition for function used to provide depth buffers to the device.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Device">type <a href="/target/freenect.go?s=3125:3266#L96">Device</a></h2>
+			<pre>type Device struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+A freenect device context.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+				
+				<h3 id="Device.Close">func (*Device) <a href="/target/freenect.go?s=5610:5643#L188">Close</a></h3>
+				<pre>func (device *Device) Close() int</pre>
+				<p>
+Closes the device and releases its resources.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Device.DepthCamera">func (*Device) <a href="/target/freenect.go?s=9483:9605#L287">DepthCamera</a></h3>
+				<pre>func (device *Device) DepthCamera(res Resolution, fmt DepthFormat, source DepthSource, sink DepthSink) (*DepthCamera, int)</pre>
+				<p>
+This function creates a new structure representing a fixed format and resolution depth stream.
+Note the parameters will be validated and the corresponding depth mode will be set, but the stream
+will not be started.
+BUG(g): The depth mode is set here instead of on Start() which means we can&#39;t reset the camera...
+</p>
+
+				
+				
+			
+				
+				<h3 id="Device.GetTilt">func (*Device) <a href="/target/freenect.go?s=6259:6296#L201">GetTilt</a></h3>
+				<pre>func (device *Device) GetTilt() *Tilt</pre>
+				<p>
+Returns a structure that can be used to control or read data from the motor controller.
+While this function will refresh the tilt state info from the device, if you&#39;re going to be reading values off the device,
+it&#39;s really necessary to be calling Refresh() on a draw/game loop or go routine, otherwise the data will be stale.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Device.LED">func (*Device) <a href="/target/freenect.go?s=5795:5842#L194">LED</a></h3>
+				<pre>func (device *Device) LED(option LEDOption) int</pre>
+				<p>
+Sets the LED option - a combination of color and blink.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Device.Open">func (*Device) <a href="/target/freenect.go?s=5347:5379#L179">Open</a></h3>
+				<pre>func (device *Device) Open() int</pre>
+				<p>
+Opens the device and prepares it for use. This must be the first call made on the Device.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Device.VideoCamera">func (*Device) <a href="/target/freenect.go?s=8597:8719#L262">VideoCamera</a></h3>
+				<pre>func (device *Device) VideoCamera(res Resolution, fmt VideoFormat, source VideoSource, sink VideoSink) (*VideoCamera, int)</pre>
+				<p>
+This function creates a new structure representing a fixed format and resolution video stream.
+Note the parameters will be validated and the corresponding video mode will be set, but the stream
+will not be started.
+BUG(g): The video mode is set here instead of on Start() which means we can&#39;t reset the camera...
+</p>
+
+				
+				
+			
+		
+			
+			
+			<h2 id="Freenect">type <a href="/target/freenect.go?s=3006:3093#L89">Freenect</a></h2>
+			<pre>type Freenect struct {
+    Devices []Device
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+The freenect library context.  Once initialized, any attached and support devices are available via the Devices member.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+				
+				<h3 id="Initialize">func <a href="/target/freenect.go?s=3694:3728#L119">Initialize</a></h3>
+				<pre>func Initialize() (*Freenect, int)</pre>
+				<p>
+This function inititalize the freenect library, selects the motor and camera subdevices and begins the event processing loop.
+Event processing occurs in a go routine that will be terminated upon a call to Shutdown()
+</p>
+
+				
+			
+
+			
+				
+				<h3 id="Freenect.Log">func (*Freenect) <a href="/target/freenect.go?s=4713:4757#L161">Log</a></h3>
+				<pre>func (freenect *Freenect) Log(logger Logger)</pre>
+				<p>
+Assigns a new logging callback function.  Only one will be used; provide nil to stop receiving log messages from libfreenect.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Freenect.LogLevel">func (*Freenect) <a href="/target/freenect.go?s=4886:4939#L166">LogLevel</a></h3>
+				<pre>func (freenect *Freenect) LogLevel(level LoggerLevel)</pre>
+				<p>
+Sets a new log message level to control the verbosity of information coming from libfreenect.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Freenect.Shutdown">func (*Freenect) <a href="/target/freenect.go?s=4474:4514#L155">Shutdown</a></h3>
+				<pre>func (freenect *Freenect) Shutdown() int</pre>
+				<p>
+Shuts down the current [initialized] Freenect context.
+</p>
+
+				
+				
+			
+		
+			
+			
+			<h2 id="LEDOption">type <a href="/target/freenect.go?s=1026:1045#L32">LEDOption</a></h2>
+			<pre>type LEDOption int</pre>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Logger">type <a href="/target/freenect.go?s=2838:2881#L86">Logger</a></h2>
+			<pre>type Logger func(level int, message string)</pre>
+			<p>
+Type definition for the freenect context logger callback.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="LoggerLevel">type <a href="/target/freenect.go?s=935:955#L28">LoggerLevel</a></h2>
+			<pre>type LoggerLevel int</pre>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Resolution">type <a href="/target/freenect.go?s=1003:1025#L31">Resolution</a></h2>
+			<pre>type Resolution int32</pre>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="Tilt">type <a href="/target/freenect.go?s=3321:3439#L106">Tilt</a></h2>
+			<pre>type Tilt struct {
+    Angle  float32
+    Status int
+    AccelX float32
+    AccelY float32
+    AccelZ float32
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+This type represents the tilt and motor controls.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+				
+				<h3 id="Tilt.Refresh">func (*Tilt) <a href="/target/freenect.go?s=6641:6668#L212">Refresh</a></h3>
+				<pre>func (tilt *Tilt) Refresh()</pre>
+				<p>
+Tells the device to update it&#39;s state data. If you&#39;re going to be reading values off the device,
+it&#39;s really necessary to be calling this function on a draw/game loop or go routine, otherwise the data will be stale.
+</p>
+
+				
+				
+			
+				
+				<h3 id="Tilt.SetAngle">func (*Tilt) <a href="/target/freenect.go?s=7175:7218#L226">SetAngle</a></h3>
+				<pre>func (tilt *Tilt) SetAngle(deg float64) int</pre>
+				<p>
+Sets the desired target angle (in degrees) of the device and starts the motor (if necessary). Note that range is something like +- 27 degrees.
+</p>
+
+				
+				
+			
+		
+			
+			
+			<h2 id="VideoCamera">type <a href="/target/freenect.go?s=7656:7778#L235">VideoCamera</a></h2>
+			<pre>type VideoCamera struct {
+    <span class="comment">// contains filtered or unexported fields</span>
+}</pre>
+			<p>
+This type represents the video camera on the device. It can be acquired via the Device function of the same name.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+				
+				<h3 id="VideoCamera.Start">func (*VideoCamera) <a href="/target/freenect.go?s=10103:10141#L305">Start</a></h3>
+				<pre>func (camera *VideoCamera) Start() int</pre>
+				<p>
+Starts the acquisition of the video stream. The source function will be invoked to obtain the first frame buffer.
+</p>
+
+				
+				
+			
+				
+				<h3 id="VideoCamera.Stop">func (*VideoCamera) <a href="/target/freenect.go?s=11308:11345#L355">Stop</a></h3>
+				<pre>func (camera *VideoCamera) Stop() int</pre>
+				<p>
+Stops the acquisition of the video stream.
+</p>
+
+				
+				
+			
+		
+			
+			
+			<h2 id="VideoFormat">type <a href="/target/freenect.go?s=956:978#L29">VideoFormat</a></h2>
+			<pre>type VideoFormat int32</pre>
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="VideoSink">type <a href="/target/freenect.go?s=7490:7538#L233">VideoSink</a></h2>
+			<pre>type VideoSink func(buffer []byte, stamp int32)</pre>
+			<p>
+Type definition for function used to receive video frames from the device.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+			
+			
+			<h2 id="VideoSource">type <a href="/target/freenect.go?s=7371:7411#L231">VideoSource</a></h2>
+			<pre>type VideoSource func(bytes int) []byte</pre>
+			<p>
+Type definition for function used to provide video buffers to the device.
+</p>
+
+
+			
+
+			
+
+			
+
+			
+
+			
+		
+		</div>
+	
+
+	
+
+
+
+
+
+
+
