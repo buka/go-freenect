@@ -8,7 +8,7 @@ Video (RGB, others untested) and depth acquistion working.  Motor and tilt work 
 
 There is no formal notion of errors at this point.  Usually upon failure the value returned is coming directly from libfreenect.
 
-Developed and tested on
+Developed and tested on Linux (Mint, kernel 3.0.0-15-generic) x64
 
 Getting Started
 ---------------
