@@ -4,7 +4,11 @@ A Go language wrapper for libfreenect which is part of the [OpenKinect project](
 
 Current Status
 --------------
-Video and depth acquistion working - see tests.  Motor/tilt not working correctly. Tested on Linux x64.
+Video (RGB, others untested) and depth acquistion working.  Motor and tilt work as well, please see test case for how to use Refresh().  FWIW, the tests are really more like samples at this point - I recognize this...
+
+There is no formal notion of errors at this point.  Usually upon failure the value returned is coming directly from libfreenect.
+
+Developed and tested on
 
 Getting Started
 ---------------
@@ -37,8 +41,6 @@ If it looks like a test deadlocks, it probably did because there aren't enough t
     export GOMAXPROCS=4
 
 If a test panics or you ctrl-c out, you might leave the device in a wonky state.  Disconnect and reconnect it and all should be good.  Again pay attention to the permissions thing.
-
-
 
 License
 =======

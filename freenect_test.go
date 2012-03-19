@@ -14,23 +14,21 @@
    limitations under the License.
 */
 
-// freenect_test.go.go
 package freenect_test
 
 import (
 	"fmt"
 	"time"
-	//"hash/crc32"
+	"hash/crc32"
 	//"math"
-	//"os"
-	//"image"
-	//"image/color"
-  //"image/png"
+	"os"
+	"image"
+	"image/color"
+  "image/png"
 	"testing"
 	"freenect"
 )
 
-/*
 func TestOpenCloseLib(t *testing.T) {
 	lib, rc := freenect.Initialize()
 	if rc != 0 {
@@ -563,8 +561,6 @@ func TestVideoAndDepth(t *testing.T) {
 		}
 	}
 }
-
-*/
 
 func TestTilt(t *testing.T) {
 	lib, rc := freenect.Initialize()

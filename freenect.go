@@ -14,7 +14,7 @@
    limitations under the License.
 */
 
-// freenect project freenect.go
+// go-freenect is a wrapper for the libfreenect C library.
 package freenect
 
 
@@ -92,13 +92,17 @@ const (
 	TILT_MOVING				= int(C.TILT_STATUS_MOVING)
 )
 
+// Type definition for the freenect context logger callback.
 type Logger func(level int, message string)
+
+// The freenect library context.  Once initialized, any attached and support devices are available via the Devices member.
 type Freenect struct {
 	ctx 			*C.freenect_context
 	logger		Logger
 	Devices		[]Device
 }
 
+// A freenect device context.
 type Device struct {
 	index			int
 	freenect 	*Freenect
@@ -108,6 +112,7 @@ type Device struct {
 	tilt			*Tilt
 }
 
+// This type represents the tilt and motor controls.
 type Tilt struct {
 	device		*Device
 	Angle			float32
@@ -117,9 +122,10 @@ type Tilt struct {
 	AccelZ		float32
 }
 
-// required for the logging callback
 var _freenect *Freenect = nil
 
+// This function inititalize the freenect library, selects the motor and camera subdevices and begins the event processing loop.
+// Event processing occurs in a go routine that will be terminated upon a call to Shutdown()
 func Initialize() (*Freenect, int) {
 	if _freenect != nil {
 		return nil, -999
@@ -155,15 +161,18 @@ func Initialize() (*Freenect, int) {
 	return _freenect, 0
 }
 
+// Shuts down the current [initialized] Freenect context.
 func (freenect *Freenect) Shutdown() int {
 	_freenect = nil
 	return int(C.freenect_shutdown(freenect.ctx))
 }
 
+// Assigns a new logging callback function.  Only one will be used; provide nil to stop receiving log messages from libfreenect.
 func (freenect *Freenect) Log(logger Logger) {
 	freenect.logger = logger
 }
 
+// Sets a new log message level to control the verbosity of information coming from libfreenect.
 func (freenect *Freenect) LogLevel(level LoggerLevel) {
 	C.registerLogCallback(freenect.ctx)
 	C.freenect_set_log_level(freenect.ctx, C.freenect_loglevel(level))
@@ -176,9 +185,7 @@ func logCallback(ctx unsafe.Pointer, level C.freenect_loglevel, msg *C.char) {
 	}
 }
 
-
-// Devices...
-
+// Opens the device and prepares it for use. This must be the first call made on the Device.
 func (device *Device) Open() int {
 	rc := int(C.freenect_open_device(device.freenect.ctx, &device.dev, C.int(device.index)))
 	if rc == 0 {
@@ -187,16 +194,20 @@ func (device *Device) Open() int {
 	return rc
 }
 
+// Closes the device and releases its resources.
 func (device *Device) Close() int {
 	C.freenect_set_user(device.dev, nil)
 	return int(C.freenect_close_device(device.dev))
 }
 
+// Sets the LED option - a combination of color and blink.
 func (device *Device) LED(option LEDOption) int {
 	return int(C.freenect_set_led(device.dev, C.freenect_led_options(option)))
 }
 
-// this function will always refresh the tilt state info from the device
+// Returns a structure that can be used to control or read data from the motor controller.
+// While this function will refresh the tilt state info from the device, if you're going to be reading values off the device,
+// it's really necessary to be calling Refresh() on a draw/game loop or go routine, otherwise the data will be stale.
 func (device *Device) GetTilt() *Tilt {
 	if device.tilt == nil {
 		device.tilt = &Tilt{device, 0, 0, 0, 0, 0}
@@ -206,6 +217,8 @@ func (device *Device) GetTilt() *Tilt {
 	return device.tilt
 }
 
+// Tells the device to update it's state data. If you're going to be reading values off the device,
+// it's really necessary to be calling this function on a draw/game loop or go routine, otherwise the data will be stale.
 func (tilt *Tilt) Refresh() {
 	C.freenect_update_tilt_state(tilt.device.dev)
 	state := C.freenect_get_tilt_state(tilt.device.dev)
@@ -219,12 +232,16 @@ func (tilt *Tilt) Refresh() {
 	tilt.AccelZ = float32(z)
 }
 
+// Sets the desired target angle (in degrees) of the device and starts the motor (if necessary). Note that range is something like +- 27 degrees.
 func (tilt *Tilt) SetAngle(deg float64) int {
 	return int(C.freenect_set_tilt_degs(tilt.device.dev, C.double(deg)))
 }
 
+// Type definition for function used to provide video buffers to the device.
 type VideoSource 	func(bytes int) []byte
+// Type definition for function used to receive video frames from the device.
 type VideoSink		func(buffer []byte, stamp int32)
+// This type represents the video camera on the device. It can be acquired via the Device function of the same name.
 type VideoCamera struct {
 	device  *Device
 	on 			bool
@@ -234,8 +251,11 @@ type VideoCamera struct {
 	current []byte
 }
 
+// Type definition for function used to provide depth buffers to the device.
 type DepthSource 	func(bytes int) []uint16
+// Type definition for function used to receive depth frames from the device.
 type DepthSink		func(buffer []uint16, stamp int32)
+// This type represents the depth camera on the device. It can be acquired via the Device function of the same name.
 type DepthCamera struct {
 	device  *Device
 	on 			bool
@@ -245,6 +265,10 @@ type DepthCamera struct {
 	current []uint16
 }
 
+// This function creates a new structure representing a fixed format and resolution video stream.
+// Note the parameters will be validated and the corresponding video mode will be set, but the stream
+// will not be started.
+// BUG(g): The video mode is set here instead of on Start() which means we can't reset the camera...
 func (device *Device) VideoCamera(res Resolution, fmt VideoFormat, source VideoSource, sink VideoSink) (*VideoCamera, int) {
 	if source == nil || sink == nil {
 		return nil, -998
@@ -266,6 +290,10 @@ func (device *Device) VideoCamera(res Resolution, fmt VideoFormat, source VideoS
 	return device.video, 0
 }
 
+// This function creates a new structure representing a fixed format and resolution depth stream.
+// Note the parameters will be validated and the corresponding depth mode will be set, but the stream
+// will not be started.
+// BUG(g): The depth mode is set here instead of on Start() which means we can't reset the camera...
 func (device *Device) DepthCamera(res Resolution, fmt DepthFormat, source DepthSource, sink DepthSink) (*DepthCamera, int) {
 	mode := C.freenect_find_depth_mode(C.freenect_resolution(res), C.freenect_depth_format(fmt))
 	if mode.is_valid == 0 {
@@ -283,7 +311,7 @@ func (device *Device) DepthCamera(res Resolution, fmt DepthFormat, source DepthS
 	return device.depth, 0
 }
 
-
+// Starts the acquisition of the video stream. The source function will be invoked to obtain the first frame buffer.
 func (camera *VideoCamera) Start() int {
 	if camera.on == true {
 		return 1
@@ -308,6 +336,7 @@ func (camera *VideoCamera) Start() int {
 	return 0
 }
 
+// Starts the acquisition of the depth stream. The source function will be invoked to obtain the first frame buffer.
 func (camera *DepthCamera) Start() int {
 	if camera.on == true {
 		return 1
@@ -332,6 +361,7 @@ func (camera *DepthCamera) Start() int {
 	return 0
 }
 
+// Stops the acquisition of the video stream.
 func (camera *VideoCamera) Stop() int {
 	if camera.on == false {
 		return 1
@@ -342,6 +372,7 @@ func (camera *VideoCamera) Stop() int {
 	return 0
 }
 
+// Stops the acquisition of the depth stream.
 func (camera *DepthCamera) Stop() int {
 	if camera.on == false {
 		return 1
